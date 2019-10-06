@@ -1,0 +1,102 @@
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class Ficheros extends JFrame {
+	
+	private static final long serialVersionUID = 1L;
+	private String fallo;
+    private String marca;
+	private JPanel pan = new JPanel();
+	JLabel lMarca = new JLabel("Marca: ");
+	private JTextField JtfMarca = new JTextField(10);
+    JLabel lFallo = new JLabel("Fallo: ");
+    private JTextField JtfFallo = new JTextField(10);
+	private JButton bAnadir = new JButton("Anadir fallo");
+	private JButton bLeer = new JButton("Leer en el fichero de fallos");
+	
+	public Ficheros( ) 
+	{
+		this.setTitle("Ficheros de fallos");
+	    this.setLocationRelativeTo(null);	    
+	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    this.setSize(600,600);
+	    pan.add(lMarca);
+	    pan.add(JtfMarca);
+	    pan.add(lFallo);
+	    pan.add(JtfFallo);
+	    pan.add(bAnadir);
+	    pan.add(bLeer);
+	    this.setContentPane(pan);
+	    this.setVisible(true);
+	    pan.setLayout(null);
+	    bAnadir.setBounds(50,40,100,50);
+	    bLeer.setBounds(150,90,100,50);
+    
+	    bAnadir.addActionListener(new ActionListener()
+	    {
+	    	public void actionPerformed(ActionEvent e)
+	    	{
+	    		bAnadirActionPerformed();
+	    	}
+	    });
+    
+	    bLeer.addActionListener(new ActionListener()
+	    {
+	    	public void actionPerformed(ActionEvent e)
+	    	{
+	    		bLeerActionPerformed();
+	    	}
+	    });
+	}
+    
+	public void bAnadirActionPerformed()
+	{
+		marca = JtfMarca.getText();
+		System.out.println(marca);
+		fallo = JtfFallo.getText();
+		System.out.println(fallo);
+		try 
+		{
+            FileWriter fich = new FileWriter("fallos.txt");
+            BufferedWriter bw = new BufferedWriter(fich);
+            String linea;
+            
+            fich.write(marca + " - " + fallo + System.lineSeparator());
+            
+            bw.close();
+        } catch (IOException ex) 
+			{
+            	System.out.println("error de escritura");
+			}
+	}
+	
+	public void bLeerActionPerformed()
+	{
+		try 
+        {
+            FileReader fich = new FileReader("fallos.txt");
+            BufferedReader br = new BufferedReader(fich);
+            String linea; //= br.readLine();
+            String chaine = "";
+            while ((linea = br.readLine()) != null)
+            {
+            	System.out.println(linea);
+            }
+            br.close();
+        } catch (IOException ex) {
+            System.out.println("error de carga");
+        }
+	}
+}
