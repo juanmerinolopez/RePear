@@ -1,0 +1,230 @@
+package Proyecto.ui;
+
+import Proyecto.dominio.Cliente;
+import Proyecto.io.IOCliente;
+import Proyecto.util.Util;
+import Proyecto.ui.JPage2;
+
+
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.ImageIcon;
+import javax.swing.Icon;
+import javax.swing.*;
+
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.*;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.*;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.Collection;
+import java.util.Set;
+import java.util.Iterator;
+import java.util.*;
+
+public class JPage1 extends JFrame
+{
+	private JLabel txtBienvenida;
+	private JLabel lblEspera;
+	private JLabel lblBienvenida;
+	private JLabel lblNombre;
+	private JLabel lblDni;
+	private JLabel lbl1;
+	private JLabel lblPin;
+	private JPasswordField txtPin;
+	private static JTextField txtDni;
+	private JTextField txtNombre;
+	private int ok = 0;
+	private String nombre;
+	private String nif;
+	private int pin;
+
+	private static ArrayList clientes;
+
+	Util espera = new Util();
+	
+	public static void main(String args[])
+	{
+		new JPage1();
+	}
+
+	public JPage1()
+	{
+		clientes = IOCliente.leerClientes();
+		IOCliente.importarClientesFromTexto(clientes);
+
+		lblBienvenida = new JLabel("Bienvenido/Welcome/Bienvenue/Wilkommen\n");
+		lblNombre = new JLabel("INTRODUCIR NOMBRE: ");
+		txtNombre = new JTextField(10);
+		lblDni = new JLabel("INTRODUCIR DNI: ");
+		txtDni = new JTextField(10);
+		lbl1 = new JLabel();
+		lblEspera = new JLabel("ESPERE...");
+		lblPin = new JLabel("INTRODUCIR CLAVE");
+		txtPin = new JPasswordField(5);
+
+		this.setLayout(new BorderLayout());
+
+		JPanel pnlSuperior = new JPanel(new FlowLayout());
+		JPanel pnlCentral = new JPanel(new FlowLayout());
+		JPanel pnlInferior = new JPanel(new FlowLayout());
+
+		ImageIcon fondo = new ImageIcon("Proyecto/imagenes/repear.png");
+
+		lbl1.setIcon(fondo);
+		lbl1.setSize(500,500);
+		lbl1.setVisible(true); 
+		lblEspera.setVisible(false);
+		lblEspera.setForeground(Color.BLACK);
+		lblEspera.setFont(new Font("Monaco",Font.BOLD,12));
+		lblBienvenida.setFont(new Font("Monaco",Font.BOLD,12));
+		lblBienvenida.setForeground(Color.BLACK);
+		lblNombre.setFont(new Font("Monaco",Font.BOLD,15));
+		lblNombre.setForeground(Color.BLACK);
+		lblDni.setFont(new Font("Monaco",Font.BOLD,15));
+		lblDni.setForeground(Color.BLACK);
+		lblPin.setVisible(false);
+		txtPin.setVisible(false);
+
+		pnlSuperior.add(lblBienvenida);
+		pnlSuperior.setBackground(Color.WHITE);
+
+		pnlCentral.add(lblNombre);
+		pnlCentral.add(lblDni);
+		pnlCentral.add(txtNombre);
+		pnlCentral.add(txtDni);
+		pnlCentral.add(lbl1);
+		pnlCentral.add(lblPin);
+		pnlCentral.add(txtPin);
+		pnlCentral.add(lblEspera);
+		pnlCentral.setBackground(Color.WHITE);
+
+		pnlInferior.setBackground(Color.WHITE);
+
+		this.add(pnlSuperior,BorderLayout.NORTH);
+		this.add(pnlCentral,BorderLayout.CENTER);
+		this.add(pnlInferior,BorderLayout.SOUTH);
+
+		this.setSize(350,350);
+		this.setTitle("Zona de Pagos");
+		this.setResizable(false);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+
+		JOptionPane.showMessageDialog(JPage1.this, "INSTRUCCIONES:\n1. INTRODUCIR PRIMERO EL NOMBRE (APELLIDO NO NECESARIO), APRIETE ENTER\n2. INTRODUCIR DESPUES EL NIF, APRIETE ENTER");
+
+		KeyListener enternombre = new KeyAdapter()					
+		{
+			public void keyPressed(KeyEvent e)
+			{
+			}
+			public void keyReleased(KeyEvent e)
+			{
+				if(txtNombre.getText().length() > 0)
+				{
+					if(e.getKeyCode()==KeyEvent.VK_ENTER)
+					{
+						for(int i=0;i<clientes.size();i++)
+						{
+							Cliente cliente = (Cliente)clientes.get(i);
+
+								if(txtNombre.getText().equals(cliente.getNombre()))
+								{
+									ok = 1;
+									txtNombre.setEnabled(false);
+								}
+						}
+						if(ok == 0)
+						{
+							JOptionPane.showMessageDialog(JPage1.this, "ERROR, NOMBRE NO RECONOCIDO");
+						} 
+						//Exception de Nombre no reconocido
+					}	
+				}
+			}
+			public void keyTyped(KeyEvent e)
+			{
+			}
+		};
+		txtNombre.addKeyListener(enternombre);
+
+
+		KeyListener enternif = new KeyAdapter()
+		{
+			public void KeyPressed(KeyEvent e)
+			{
+			}
+			public void keyReleased(KeyEvent e)
+			{
+				if(txtDni.getText().length() > 0)
+				{
+					if(e.getKeyCode()==KeyEvent.VK_ENTER)
+					{
+						if(ok == 1)
+						{
+							for(int i=0;i<clientes.size();i++)
+							{
+								Cliente cliente = (Cliente)clientes.get(i);
+
+								if(txtDni.getText().equals(cliente.getNif()))
+								{
+									lblEspera.setVisible(true);
+									txtDni.setEnabled(false);
+									espera.wait(2);
+									dispose();
+									new JPage2();
+								} //Exception de Nif no reconocido
+							}
+						}	
+					}
+				}
+			}
+			public void KeyTyped(KeyEvent e)
+			{
+			}
+		};
+		txtDni.addKeyListener(enternif);	
+	}
+	
+	public static ArrayList exportarLista()
+	{
+		return clientes;
+	}
+
+	public static Cliente exportarCliente()
+	{
+		ArrayList clientes = exportarLista();
+		Cliente cliente1;
+
+		for(int i=0;i<clientes.size();i++)
+		{
+			cliente1 = (Cliente)clientes.get(i);
+
+			if(txtDni.getText().equals(cliente1.getNif()))
+			{
+				return cliente1;
+			}
+			System.out.println(cliente1);
+        }
+
+        return null;
+
+	}
+}
